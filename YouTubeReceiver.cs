@@ -1,4 +1,5 @@
-﻿using YoutubeExplode;
+﻿using System;
+using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
 namespace CommandPractic
@@ -29,7 +30,7 @@ namespace CommandPractic
                 };
                 return InfoList;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 Dictionary<string, string> DefaultList = new Dictionary<string, string>()
@@ -45,13 +46,22 @@ namespace CommandPractic
         /// </summary>
         public async Task Download(string videoUrl, string pathToDownload)
         {
+            CancellationTokenSource tokenCansel = new CancellationTokenSource();
+
             var youtube = new YoutubeClient();
             try
             {
                 var video = await youtube.Videos.GetAsync(videoUrl);
                 var streamManifest = await youtube.Videos.Streams.GetManifestAsync(video.Id);
                 var streamInfo = streamManifest.GetMuxedStreams().TryGetWithHighestVideoQuality();
-                await youtube.Videos.Streams.DownloadAsync(streamInfo, filePath: $"{pathToDownload}/{video.Title.Replace(".", "_")}.{streamInfo.Container}");
+
+                // для имени файла оставляем только буквы
+                string title = video.Title; 
+                string titleOnlyLetters = new String(title.Where(Char.IsLetter).ToArray());
+
+                await youtube.Videos.
+                    Streams.DownloadAsync(streamInfo, filePath: // замена точек в заголовке на подчёркивание, чтобы не вызывать ошибку в имени файла
+                    $@"{pathToDownload}\{titleOnlyLetters}.{streamInfo.Container}");
             }
             catch (Exception ex)
             {

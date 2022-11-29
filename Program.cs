@@ -16,45 +16,59 @@ public class Program
         // создадим получателя 
         var receiver = new YouTubeReceiver();
 
-        // создадим команду 
-        var commandOne = new DownloadThisVideoToFolder(receiver);
-        var url = Console.ReadLine();
-        var commandTwo = new InfoAboutVideoToConsole(receiver, url);
+        bool needCancel; // условие для входа в блок инициализации команды
+        Command command; // переменная команды
 
-        // инициализация команды
-        sender.SetCommand(commandTwo);
+        Console.WriteLine("Начало работы. Следуйте инструкциям программы.");
+        Console.WriteLine("\n\n\nВведите ссылку на видео с YouTube:\n\n\n");
+        string videoUrl = Console.ReadLine();
 
-        //  выполнение
-        sender.Run();
-        Console.ReadKey();
-    }
-}
-
-namespace CommandPractic
-{
-
-    /// <summary>
-    /// Отправитель команды
-    /// </summary>
-    class Sender
-    {
-        Command _command;
-
-        public void SetCommand(Command command)
+        while (true)
         {
-            _command = command;
-        }
+            Console.Clear();
 
-        // Выполнить
-        public void Run()
-        {
-            _command.Run();
-        }
+            Console.WriteLine("\n\n\nВыберите действие:" +
+                $"\n\tдля просмотра информации введите 1" +
+                $"\n\tдля скачивания видео введите 2" +
+                $"\n\tвыбрать другое видео - введите 3" +
+                "\n\n\n"); ;
+            string textCommand = Console.ReadLine();
 
-        // Отменить
-        public void Cancel()
-        {
-            _command.Cancel();
+            switch (textCommand)
+            {
+                case "1":
+                    needCancel = false;
+                    command = new InfoAboutVideoToConsole(receiver, videoUrl);
+                    break;
+
+                case "2":
+                    needCancel = false;
+                    Console.WriteLine("\n\n\nВведите путь для загрузки:\n\n\n");
+                    string pathToDownload = Console.ReadLine();
+                    command = new DownloadThisVideoToFolder(receiver, videoUrl, pathToDownload);
+                    break;
+
+                case "3":
+                    needCancel = true;
+                    Console.WriteLine("\n\n\nВведите ссылку на видео с YouTube:\n\n\n");
+                    videoUrl = Console.ReadLine();
+                    command = null; // ссылка будет присвоена при следующей итерации цикла
+                    break;
+
+                default:
+                    needCancel = true;
+                    command = null;
+                    break;
+            }
+
+            if (needCancel == false)
+            {
+                // инициализация команды
+                sender.SetCommand(command);
+
+                //  выполнение
+                sender.Run();
+            }
         }
     }
 }

@@ -8,19 +8,26 @@ namespace PatternsPartTwo.Commands
     class DownloadThisVideoToFolder : Command
     {
         YouTubeReceiver receiver;
+        string pathToDownload;
+        string videoUrl;
 
-        public DownloadThisVideoToFolder(YouTubeReceiver receiver)
+        public DownloadThisVideoToFolder(YouTubeReceiver receiver, string videoUrl, string pathToDownload)
         {
             this.receiver = receiver;
+            this.videoUrl = videoUrl;
+            this.pathToDownload = pathToDownload;
         }
 
-        // Выполнить
+        /// <summary>
+        /// Загрузка видео в указанную папку
+        /// </summary>
         public override void Run()
         {
-            Console.WriteLine("Команда отправлена");
+            Console.WriteLine("Начало загрузки...");
+            receiver.Download(videoUrl, pathToDownload);
+            Console.WriteLine("Загрузка завершена");
         }
 
-        // Отменить
         public override void Cancel()
         { }
     }

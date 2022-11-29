@@ -16,11 +16,14 @@ namespace PatternsPartTwo.Commands
             this.urlVideo = urlVideo;
         }
 
+        /// <summary>
+        /// Вывод информации о видео в консоль
+        /// </summary>
         public override async void Run()
         {
             var infoAboutVideo = new Dictionary<string, string>();
             infoAboutVideo = await receiver.GetInfoAsync(urlVideo);
-            foreach(var info in infoAboutVideo)
+            foreach (var info in infoAboutVideo)
             {
                 Console.WriteLine($"{info.Key} : {info.Value}");
             }
